@@ -90,6 +90,35 @@
       context.putImageData(imageData, 0, 0);
     },
 
+    addDot: function (pixels, width, height, dotCenterX, dotCenterY) {
+      var x, y, c, pixelOffset,
+        rgbaOfDot = [0, 0, 0, 255],
+        dotRadius = 5,
+        dotTop = Math.max(dotCenterY - dotRadius, 0),
+        dotBottom = Math.min(dotCenterY + dotRadius, height - 1),
+        dotLeft = Math.max(dotCenterX - dotRadius, 0),
+        dotRight = Math.min(dotCenterX + dotRadius, width - 1);
+      
+      for (y = dotTop; y <= dotBottom; y++) {
+        for (x = dotLeft; x <= dotRight; x++) {
+          pixelOffset = (y * width * 4) + (x * 4);
+          for (c = 0; c < 4; c++) {
+            pixels[pixelOffset + c] = rgbaOfDot[c];
+          }
+        }
+      }
+    },
+
+    addAnnotationDot: function (pixels, width, height, eyeSep) {
+      var dotCenterY = Math.floor(height/5),
+        dotCenterX = Math.floor(width/2),
+        dotL = Math.floor(dotCenterX - eyeSep/2),
+        dotR = Math.ceil(dotCenterX + eyeSep/2);
+
+      this.addDot(pixels, width, height, dotL, dotCenterY);
+      this.addDot(pixels, width, height, dotR, dotCenterY);
+    },
+
     generatePixelData: function (opts) {
 
       /*
@@ -173,6 +202,8 @@
           }
         }
       }
+
+      this.addAnnotationDot(pixels, width, height, eyeSep);
 
       return pixels;
     },
